@@ -26,8 +26,8 @@ class UserMixin(WechatAPIClientBase):
             wxid = self.wxid
 
         async with aiohttp.ClientSession() as session:
-            json_param = {"Wxid": wxid}
-            response = await session.post(f'http://{self.ip}:{self.port}/GetProfile', json=json_param)
+            json_param = {"wxid": wxid}
+            response = await session.post(f'http://{self.ip}:{self.port}/api/User/GetContractProfile', data=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):

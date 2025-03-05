@@ -1,15 +1,15 @@
 [WechatAPIServer]
-port = 9000                # WechatAPI服务器端口，默认9000，如有冲突可修改
-mode = "release"           # 运行模式：release(生产环境)，debug(调试模式)
+port = 8057                # WechatAPI服务器端口，默认9000，如有冲突可修改
+mode = "debug"           # 运行模式：release(生产环境)，debug(调试模式)
 redis-host = "127.0.0.1"   # Redis服务器地址，本地使用127.0.0.1
 redis-port = 6379          # Redis端口，默认6379
 redis-password = ""        # Redis密码，如果有设置密码则填写
-redis-db = 0               # Redis数据库编号，默认0
+redis-db = 7               # Redis数据库编号，默认0
 
 # XYBot 核心设置
 [XYBot]
 version = "v1.0.0"                    # 版本号，请勿修改
-ignore-protection = false             # 是否忽略风控保护机制，建议保持false
+ignore-protection = true             # 是否忽略风控保护机制，建议保持false
 
 # SQLite数据库地址，一般无需修改
 XYBotDB-url = "sqlite:///database/xybot.db"

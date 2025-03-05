@@ -20,8 +20,8 @@ class LoginMixin(WechatAPIClientBase):
         """
         try:
             async with aiohttp.ClientSession() as session:
-                response = await session.get(f'http://{self.ip}:{self.port}/IsRunning')
-                return await response.text() == 'OK'
+                response = await session.post(f'http://{self.ip}:{self.port}/api/Login/HeartBeat')
+                return  response.status == 200
         except aiohttp.client_exceptions.ClientConnectorError:
             return False
 
@@ -48,7 +48,7 @@ class LoginMixin(WechatAPIClientBase):
                                            'ProxyPassword': proxy.password,
                                            'ProxyUser': proxy.username}
 
-            response = await session.post(f'http://{self.ip}:{self.port}/GetQRCode', json=json_param)
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Login/GetQR', json=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):
@@ -83,7 +83,7 @@ class LoginMixin(WechatAPIClientBase):
         """
         async with aiohttp.ClientSession() as session:
             json_param = {"Uuid": uuid}
-            response = await session.post(f'http://{self.ip}:{self.port}/CheckUuid', json=json_param)
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Login/CheckQR', json=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):
@@ -171,7 +171,7 @@ class LoginMixin(WechatAPIClientBase):
 
         async with aiohttp.ClientSession() as session:
             json_param = {"Wxid": wxid}
-            response = await session.post(f'http://{self.ip}:{self.port}/GetCachedInfo', json=json_param)
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Login/GetCacheInfo', json=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):

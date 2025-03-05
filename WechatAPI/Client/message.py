@@ -632,7 +632,7 @@ class MessageMixin(WechatAPIClientBase):
 
         async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=10)) as session:
             json_param = {"Wxid": self.wxid, "Scene": 0, "Synckey": ""}
-            response = await session.post(f'http://{self.ip}:{self.port}/Sync', json=json_param)
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Msg/Sync', json=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):

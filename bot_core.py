@@ -30,15 +30,15 @@ async def bot_core():
     # 启动WechatAPI服务
     server = WechatAPI.WechatAPIServer()
     api_config = main_config.get("WechatAPIServer", {})
-    redis_host = api_config.get("redis-host", "127.0.0.1")
-    redis_port = api_config.get("redis-port", 6379)
-    logger.debug("Redis 主机地址: {}:{}", redis_host, redis_port)
-    server.start(port=api_config.get("port", 9000),
-                 mode=api_config.get("mode", "release"),
-                 redis_host=redis_host,
-                 redis_port=redis_port,
-                 redis_password=api_config.get("redis-password", ""),
-                 redis_db=api_config.get("redis-db", 0))
+    # redis_host = api_config.get("redis-host", "127.0.0.1")
+    # redis_port = api_config.get("redis-port", 6379)
+    # logger.debug("Redis 主机地址: {}:{}", redis_host, redis_port)
+    # server.start(port=api_config.get("port", 9000),
+    #              mode=api_config.get("mode", "release"),
+    #              redis_host=redis_host,
+    #              redis_port=redis_port,
+    #              redis_password=api_config.get("redis-password", ""),
+    #              redis_db=api_config.get("redis-db", 0))
 
     # 实例化WechatAPI客户端
     bot = WechatAPI.WechatAPIClient("127.0.0.1", api_config.get("port", 9000))
@@ -55,9 +55,9 @@ async def bot_core():
         logger.error("WechatAPI服务启动超时")
         return
 
-    if not await bot.check_database():
-        logger.error("Redis连接失败，请检查Redis是否在运行中，Redis的配置")
-        return
+    # if not await bot.check_database():
+    #     logger.error("Redis连接失败，请检查Redis是否在运行中，Redis的配置")
+    #     return
 
     logger.success("WechatAPI服务已启动")
 
@@ -82,7 +82,7 @@ async def bot_core():
     wxid = robot_stat.get("wxid", None)
     device_name = robot_stat.get("device_name", None)
     device_id = robot_stat.get("device_id", None)
-
+    print(wxid)
     if not await bot.is_logged_in(wxid):
         while not await bot.is_logged_in(wxid):
             # 需要登录
@@ -151,17 +151,17 @@ async def bot_core():
     # ========== 登录完毕 开始初始化 ========== #
 
     # 开启自动心跳
-    try:
-        success = await bot.start_auto_heartbeat()
-        if success:
-            logger.success("已开启自动心跳")
-        else:
-            logger.warning("开启自动心跳失败")
-    except ValueError:
-        logger.warning("自动心跳已在运行")
-    except Exception as e:
-        if "在运行" not in e:
-            logger.warning("自动心跳已在运行")
+    # try:
+    #     success = await bot.start_auto_heartbeat()
+    #     if success:
+    #         logger.success("已开启自动心跳")
+    #     else:
+    #         logger.warning("开启自动心跳失败")
+    # except ValueError:
+    #     logger.warning("自动心跳已在运行")
+    # except Exception as e:
+    #     if "在运行" not in e:
+    #         logger.warning("自动心跳已在运行")
 
     # 初始化机器人
     xybot = XYBot(bot)
@@ -191,6 +191,7 @@ async def bot_core():
     count = 0
     while True:
         data = await bot.sync_message()
+        print(data)
         data = data.get("AddMsgs")
         if not data:
             if count > 2:
@@ -217,6 +218,7 @@ async def bot_core():
         data = data.get("AddMsgs")
         if data:
             for message in data:
+                print(message)
                 asyncio.create_task(xybot.process_message(message))
         # 使用异步睡眠替代忙等待循环
         await asyncio.sleep(0.5)
