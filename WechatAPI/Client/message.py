@@ -135,7 +135,7 @@ class MessageMixin(WechatAPIClientBase):
 
         async with aiohttp.ClientSession() as session:
             json_param = {"Wxid": self.wxid, "ToWxid": wxid, "Content": content, "Type": 1, "At": at_str}
-            response = await session.post(f'http://{self.ip}:{self.port}/SendTextMsg', json=json_param)
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Msg/SendTxt', json=json_param)
             json_resp = await response.json()
             if json_resp.get("Success"):
                 logger.info("发送文字消息: 对方wxid:{} at:{} 内容:{}", wxid, at, content)
@@ -182,7 +182,7 @@ class MessageMixin(WechatAPIClientBase):
 
         async with aiohttp.ClientSession() as session:
             json_param = {"Wxid": self.wxid, "ToWxid": wxid, "Base64": image}
-            response = await session.post(f'http://{self.ip}:{self.port}/SendImageMsg', json=json_param)
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Msg/SendImageMsg', json=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):
@@ -250,7 +250,7 @@ class MessageMixin(WechatAPIClientBase):
         async with aiohttp.ClientSession() as session:
             json_param = {"Wxid": self.wxid, "ToWxid": wxid, "Base64": vid_base64, "ImageBase64": image_base64,
                           "PlayLength": duration}
-            async with session.post(f'http://{self.ip}:{self.port}/SendVideoMsg', json=json_param) as resp:
+            async with session.post(f'http://{self.ip}:{self.port}/api/Msg/SendVideoMsg', json=json_param) as resp:
                 json_resp = await resp.json()
 
         if json_resp.get("Success"):
@@ -326,7 +326,7 @@ class MessageMixin(WechatAPIClientBase):
         async with aiohttp.ClientSession() as session:
             json_param = {"Wxid": self.wxid, "ToWxid": wxid, "Base64": voice_base64, "VoiceTime": duration,
                           "Type": format_dict[format]}
-            response = await session.post(f'http://{self.ip}:{self.port}/SendVoiceMsg', json=json_param)
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Msg/SendVoiceMsg', json=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):
@@ -381,7 +381,7 @@ class MessageMixin(WechatAPIClientBase):
         async with aiohttp.ClientSession() as session:
             json_param = {"Wxid": self.wxid, "ToWxid": wxid, "Url": url, "Title": title, "Desc": description,
                           "ThumbUrl": thumb_url}
-            response = await session.post(f'http://{self.ip}:{self.port}/SendShareLink', json=json_param)
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Msg/SendShareLink', json=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):
@@ -422,7 +422,7 @@ class MessageMixin(WechatAPIClientBase):
 
         async with aiohttp.ClientSession() as session:
             json_param = {"Wxid": self.wxid, "ToWxid": wxid, "Md5": md5, "TotalLen": total_length}
-            response = await session.post(f'http://{self.ip}:{self.port}/SendEmojiMsg', json=json_param)
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Msg/SendEmojiMsg', json=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):
@@ -461,7 +461,7 @@ class MessageMixin(WechatAPIClientBase):
         async with aiohttp.ClientSession() as session:
             json_param = {"Wxid": self.wxid, "ToWxid": wxid, "CardWxid": card_wxid, "CardAlias": card_alias,
                           "CardNickname": card_nickname}
-            response = await session.post(f'http://{self.ip}:{self.port}/SendCardMsg', json=json_param)
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Msg/SendCardMsg', json=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):
@@ -501,7 +501,7 @@ class MessageMixin(WechatAPIClientBase):
 
         async with aiohttp.ClientSession() as session:
             json_param = {"Wxid": self.wxid, "ToWxid": wxid, "Xml": xml, "Type": type}
-            response = await session.post(f'http://{self.ip}:{self.port}/SendAppMsg', json=json_param)
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Msg/SendAppMsg', json=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):
@@ -537,7 +537,7 @@ class MessageMixin(WechatAPIClientBase):
 
         async with aiohttp.ClientSession() as session:
             json_param = {"Wxid": self.wxid, "ToWxid": wxid, "Content": xml}
-            response = await session.post(f'http://{self.ip}:{self.port}/SendCDNFileMsg', json=json_param)
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Msg/SendCDNFileMsg', json=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):
@@ -572,7 +572,7 @@ class MessageMixin(WechatAPIClientBase):
 
         async with aiohttp.ClientSession() as session:
             json_param = {"Wxid": self.wxid, "ToWxid": wxid, "Content": xml}
-            response = await session.post(f'http://{self.ip}:{self.port}/SendCDNImgMsg', json=json_param)
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Msg/SendCDNImgMsg', json=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):
@@ -607,7 +607,7 @@ class MessageMixin(WechatAPIClientBase):
 
         async with aiohttp.ClientSession() as session:
             json_param = {"Wxid": self.wxid, "ToWxid": wxid, "Content": xml}
-            response = await session.post(f'http://{self.ip}:{self.port}/SendCDNVideoMsg', json=json_param)
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Msg/SendCDNVideoMsg', json=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):

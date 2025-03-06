@@ -10,14 +10,36 @@ import traceback  # 用于获取详细的异常堆栈信息
 import asyncio
 import random
 import json
+import urllib3
 
 from loguru import logger
 from WechatAPI import WechatAPIClient
 from utils.decorators import *
 from utils.plugin_base import PluginBase
+http = urllib3.PoolManager(cert_reqs='CERT_NONE')
 
 BASE_URL_VVHAN = "https://api.vvhan.com/api/"
 BASE_URL_ALAPI = "https://v3.alapi.cn/api/"
+
+async def MoyuApi():
+    url = 'https://dayu.qqsuu.cn/moyuribao/apis.php?type=json'
+    r = http.request('GET', url)
+    content = r.data.decode('utf-8')
+    if (content):
+        try:
+            res = json.loads(content)
+            # 状态码 200 表示请求成功
+            if (res['code'] == 200):
+                return res['data']
+            else:
+                return "请求失败"
+        except Exception:
+            return "解析结果异常"
+    else:
+        # 无法获取返回内容，请求异常
+        return "请求异常,老大你哪找的辣鸡接口，挂啦！"
+
+
 
 class DailyBot(PluginBase):
     description = "日常生活服务助手"
@@ -178,12 +200,19 @@ class DailyBot(PluginBase):
                     result = "获取早报图片失败"
 
             elif content == self.moyu_command:
-                result = await self.get_moyu_calendar()
-                if self.is_valid_url(result):
-                    image_content = await self.download_image(result)
-                    if image_content:
-                        await bot.send_image_message(message["FromWxid"], image=image_content)
-                        return False  # 阻止其他插件处理
+                print("command")
+                image_content = await MoyuApi()
+                print(image_content)
+                #await bot.send_image_message(message["FromWxid"], image=image_content)
+                return False
+
+                # result = await self.get_moyu_calendar()
+                # if self.is_valid_url(result):
+                #     image_content = await self.download_image(result)
+                #     print(image_content)
+                #     if image_content:
+                #         await bot.send_image_message(message["FromWxid"], image=image_content)
+                #         return False  # 阻止其他插件处理
 
             elif content == self.bagua_command:
                 result = await self.get_mx_bagua()
@@ -396,27 +425,20 @@ class DailyBot(PluginBase):
 
     async def get_moyu_calendar(self):
         """获取摸鱼人日历"""
-        url = BASE_URL_VVHAN + "moyu?type=json"
-        payload = "format=json"
-        headers = {'Content-Type': "application/x-www-form-urlencoded"}
+
         try:
+            # 使用配置的备用API
+            url = self.moyu_backup_api + "?type=json"
+            payload = "format=json"
+            headers = {'Content-Type': "application/x-www-form-urlencoded"}
             moyu_calendar_info = await self.make_request(url, method="POST", headers=headers, data=payload)
-            if isinstance(moyu_calendar_info, dict) and moyu_calendar_info['success']:
-                return moyu_calendar_info['url']
-            else:
-                # 使用配置的备用API
-                url = self.moyu_backup_api + "?type=json"
-                payload = "format=json"
-                headers = {'Content-Type': "application/x-www-form-urlencoded"}
-                moyu_calendar_info = await self.make_request(url, method="POST", headers=headers, data=payload)
-                if isinstance(moyu_calendar_info, dict) and moyu_calendar_info['code'] == 200:
-                    moyu_pic_url = moyu_calendar_info['data']
-                    if await self.is_valid_image_url(moyu_pic_url):
-                        return moyu_pic_url
-                    else:
-                        return "周末无需摸鱼，愉快玩耍吧"
+            if isinstance(moyu_calendar_info, dict) and moyu_calendar_info['code'] == 200:
+                moyu_pic_url = moyu_calendar_info['data']
+                if await self.is_valid_image_url(moyu_pic_url):
+                    return moyu_pic_url
                 else:
-                    return "暂无可用"
+                    return "周末无需摸鱼，愉快玩耍吧"
+
         except Exception as e:
             logger.error(f"获取摸鱼日历失败: {str(e)}")
             return "获取摸鱼日历失败"

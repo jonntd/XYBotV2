@@ -47,10 +47,10 @@ class LoginMixin(WechatAPIClientBase):
                 json_param['ProxyInfo'] = {'ProxyIp': f'{proxy.ip}:{proxy.port}',
                                            'ProxyPassword': proxy.password,
                                            'ProxyUser': proxy.username}
+            print(json_param)
 
             response = await session.post(f'http://{self.ip}:{self.port}/api/Login/GetQR', json=json_param)
             json_resp = await response.json()
-
             if json_resp.get("Success"):
 
                 if print_qr:
@@ -81,9 +81,10 @@ class LoginMixin(WechatAPIClientBase):
         Raises:
             根据error_handler处理错误
         """
+        print(uuid)
         async with aiohttp.ClientSession() as session:
-            json_param = {"Uuid": uuid}
-            response = await session.post(f'http://{self.ip}:{self.port}/api/Login/CheckQR', json=json_param)
+            json_param = {"uuid": uuid}
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Login/CheckQR', data=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):
@@ -111,8 +112,8 @@ class LoginMixin(WechatAPIClientBase):
             raise UserLoggedOut("请先登录")
 
         async with aiohttp.ClientSession() as session:
-            json_param = {"Wxid": self.wxid}
-            response = await session.post(f'http://{self.ip}:{self.port}/Logout', json=json_param)
+            json_param = {"wxid": self.wxid}
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Login/LogOut', data=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):
@@ -143,10 +144,9 @@ class LoginMixin(WechatAPIClientBase):
             wxid = self.wxid
 
         async with aiohttp.ClientSession() as session:
-            json_param = {"Wxid": wxid}
-            response = await session.post(f'http://{self.ip}:{self.port}/AwakenLogin', json=json_param)
+            json_param = {"wxid": wxid}
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Login/Awaken', data=json_param)
             json_resp = await response.json()
-
             if json_resp.get("Success") and json_resp.get("Data").get("QrCodeResponse").get("Uuid"):
                 return json_resp.get("Data").get("QrCodeResponse").get("Uuid")
             elif not json_resp.get("Data").get("QrCodeResponse").get("Uuid"):
@@ -168,12 +168,10 @@ class LoginMixin(WechatAPIClientBase):
 
         if not wxid:
             return {}
-
         async with aiohttp.ClientSession() as session:
-            json_param = {"Wxid": wxid}
-            response = await session.post(f'http://{self.ip}:{self.port}/api/Login/GetCacheInfo', json=json_param)
+            json_param = {"wxid": wxid}
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Login/GetCacheInfo', data=json_param)
             json_resp = await response.json()
-
             if json_resp.get("Success"):
                 return json_resp.get("Data")
             else:
@@ -193,8 +191,8 @@ class LoginMixin(WechatAPIClientBase):
             raise UserLoggedOut("请先登录")
 
         async with aiohttp.ClientSession() as session:
-            json_param = {"Wxid": self.wxid}
-            response = await session.post(f'http://{self.ip}:{self.port}/Heartbeat', json=json_param)
+            json_param = {"wxid": self.wxid}
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Login/HeartBeat', json=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):

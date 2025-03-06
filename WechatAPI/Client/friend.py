@@ -37,40 +37,11 @@ class FriendMixin(WechatAPIClientBase):
 
         async with aiohttp.ClientSession() as session:
             json_param = {"Wxid": self.wxid, "Scene": scene, "V1": v1, "V2": v2}
-            response = await session.post(f'http://{self.ip}:{self.port}/AcceptFriend', json=json_param)
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Friend/AcceptFriend', json=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):
                 return True
-            else:
-                self.error_handler(json_resp)
-
-    async def get_contact(self, wxid: Union[str, list[str]]) -> Union[dict, list[dict]]:
-        """获取联系人信息
-
-        Args:
-            wxid: 联系人wxid, 可以是多个wxid在list里，也可查询chatroom
-
-        Returns:
-            Union[dict, list[dict]]: 单个联系人返回dict，多个联系人返回list[dict]
-        """
-        if not self.wxid:
-            raise UserLoggedOut("请先登录")
-
-        if isinstance(wxid, list):
-            wxid = ",".join(wxid)
-
-        async with aiohttp.ClientSession() as session:
-            json_param = {"Wxid": self.wxid, "RequestWxids": wxid}
-            response = await session.post(f'http://{self.ip}:{self.port}/GetContact', json=json_param)
-            json_resp = await response.json()
-
-            if json_resp.get("Success"):
-                contact_list = json_resp.get("Data").get("ContactList")
-                if len(contact_list) == 1:
-                    return contact_list[0]
-                else:
-                    return contact_list
             else:
                 self.error_handler(json_resp)
 
@@ -94,9 +65,11 @@ class FriendMixin(WechatAPIClientBase):
 
 
         async with aiohttp.ClientSession() as session:
-            json_param = {"Wxid": self.wxid, "RequestWxids": wxid, "Chatroom": chatroom}
-            response = await session.post(f'http://{self.ip}:{self.port}/GetContractDetail', json=json_param)
+            json_param = {"Wxid": self.wxid, "Towxids": wxid, "Chatroom": chatroom}
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Friend/GetContractDetail', json=json_param)
             json_resp = await response.json()
+            print(json_param)
+            print(json_resp)
 
             if json_resp.get("Success"):
                 return json_resp.get("Data").get("ContactList")
@@ -118,7 +91,7 @@ class FriendMixin(WechatAPIClientBase):
 
         async with aiohttp.ClientSession() as session:
             json_param = {"Wxid": self.wxid, "CurrentWxcontactSeq": wx_seq, "CurrentChatroomContactSeq": chatroom_seq}
-            response = await session.post(f'http://{self.ip}:{self.port}/GetContractList', json=json_param)
+            response = await session.post(f'http://{self.ip}:{self.port}/api/Friend/GetContractList', json=json_param)
             json_resp = await response.json()
 
             if json_resp.get("Success"):

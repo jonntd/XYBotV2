@@ -45,7 +45,7 @@ class XYBot:
         # 预处理消息
         message["FromWxid"] = message.get("FromUserName").get("string")
         message.pop("FromUserName")
-        message["ToWxid"] = message.get("ToWxid").get("string")
+        message["ToWxid"] = message.get("ToUserName").get("string")
 
         # 处理一下自己发的消息
         if message["FromWxid"] == self.wxid and message["ToWxid"].endswith("@chatroom"):  # 自己发发到群聊

@@ -82,7 +82,6 @@ async def bot_core():
     wxid = robot_stat.get("wxid", None)
     device_name = robot_stat.get("device_name", None)
     device_id = robot_stat.get("device_id", None)
-    print(wxid)
     if not await bot.is_logged_in(wxid):
         while not await bot.is_logged_in(wxid):
             # 需要登录
@@ -191,7 +190,6 @@ async def bot_core():
     count = 0
     while True:
         data = await bot.sync_message()
-        print(data)
         data = data.get("AddMsgs")
         if not data:
             if count > 2:
